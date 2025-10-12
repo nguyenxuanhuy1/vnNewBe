@@ -1,0 +1,181 @@
+package com.example.demo.service.Impl;
+
+import com.example.demo.dto.ArticleDetailDto;
+import com.example.demo.dto.ArticleDto;
+import com.example.demo.dto.ArticleListDto;
+import com.example.demo.dto.PageResponse;
+import com.example.demo.entity.Article;
+import com.example.demo.entity.Category;
+import com.example.demo.entity.Tag;
+import com.example.demo.repository.ArticleRepository;
+import com.example.demo.repository.CategoryRepository;
+import com.example.demo.repository.TagRepository;
+import com.example.demo.service.ArticleService;
+import com.example.demo.util.SlugUtil;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
+import org.springframework.stereotype.Service;
+import org.springframework.data.domain.*;
+
+import java.util.*;
+
+@Service
+@RequiredArgsConstructor
+public class ArticleServiceImpl implements ArticleService {
+
+    private final ArticleRepository articleRepository;
+    private final CategoryRepository categoryRepository;
+    private final TagRepository tagRepository;
+
+    @Override
+    @Transactional
+    public String createArticle(ArticleDto dto) {
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại"));
+
+        String slug = SlugUtil.toSlug(dto.getTitle());
+
+        if (articleRepository.findBySlug(slug).isPresent()) {
+            throw new RuntimeException("Tiêu đề hoặc slug đã tồn tại!");
+        }
+        Article article = new Article();
+        article.setTitle(dto.getTitle());
+        article.setSlug(slug);
+        article.setContent(dto.getContent());
+        article.setImage(dto.getImage());
+        article.setCategory(category);
+        article.setViews(dto.getViews());
+        article.setIsFeatured(dto.getIsFeatured());
+
+        if (Boolean.TRUE.equals(dto.getIsFeatured())) {
+            articleRepository.unsetFeaturedArticles();
+        }
+        Set<Tag> savedTags = new HashSet<>();
+        for (String tagName : dto.getTags()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> {
+                        Tag newTag = new Tag();
+                        newTag.setName(tagName);
+                        newTag.setSlug(SlugUtil.toSlug(tagName));
+                        return tagRepository.save(newTag);
+                    });
+            savedTags.add(tag);
+        }
+        article.setTags(savedTags);
+        articleRepository.save(article);
+        return "Thêm mới bài viết thành công!";
+    }
+
+
+    @Override
+    @Transactional
+    public String updateArticle(Long id, ArticleDto dto) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại"));
+
+        String newSlug = SlugUtil.toSlug(dto.getTitle());
+
+        boolean exists = articleRepository.existsBySlugAndIdNot(newSlug, id);
+        if (exists) {
+            throw new RuntimeException("Tiêu đề đã tồn tại");
+        }
+
+        article.setTitle(dto.getTitle());
+        article.setSlug(newSlug);
+        article.setContent(dto.getContent());
+        article.setImage(dto.getImage());
+        article.setViews(dto.getViews());
+
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại"));
+        article.setCategory(category);
+
+        if (Boolean.TRUE.equals(dto.getIsFeatured())) {
+            if (!Boolean.TRUE.equals(article.getIsFeatured())) {
+                articleRepository.unsetFeaturedArticles();
+            }
+            article.setIsFeatured(true);
+        } else {
+            article.setIsFeatured(false);
+        }
+
+        Set<Tag> savedTags = new HashSet<>();
+        for (String tagName : dto.getTags()) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> {
+                        Tag newTag = new Tag();
+                        newTag.setName(tagName);
+                        newTag.setSlug(SlugUtil.toSlug(tagName));
+                        return tagRepository.save(newTag);
+                    });
+            savedTags.add(tag);
+        }
+        article.setTags(savedTags);
+
+        articleRepository.save(article);
+        return "Cập nhật bài viết thành công!";
+    }
+
+
+    @Override
+    public PageResponse<ArticleListDto> getArticlesByCategory(Long categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Article> articlePage = articleRepository.findByCategoryId(categoryId, pageable);
+
+        List<ArticleListDto> dtoList = articlePage.getContent().stream()
+                .map(a -> new ArticleListDto(
+                        a.getId(),
+                        a.getTitle(),
+                        a.getSlug(),
+                        a.getImage(),
+                        a.getCreatedAt(),
+                        a.getUpdatedAt(),
+                        a.getViews(),
+                        a.getIsFeatured()
+                ))
+                .toList();
+
+        return new PageResponse<>(dtoList, articlePage.getTotalElements(), size, page);
+    }
+
+    @Override
+    public PageResponse<ArticleListDto> searchArticlesByTags(List<String> tags, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Article> articlePage = articleRepository.findDistinctByTags_SlugIn(tags, pageable);
+
+        List<ArticleListDto> dtoList = articlePage.getContent().stream()
+                .map(a -> new ArticleListDto(
+                        a.getId(),
+                        a.getTitle(),
+                        a.getSlug(),
+                        a.getImage(),
+                        a.getCreatedAt(),
+                        a.getUpdatedAt(),
+                        a.getViews(),
+                        a.getIsFeatured()
+                ))
+                .toList();
+
+        return new PageResponse<>(dtoList, articlePage.getTotalElements(), size, page);
+    }
+    @Override
+    public ArticleDetailDto getArticleDetail(String slug) {
+        Article article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại"));
+        return new ArticleDetailDto(
+                article.getId(),
+                article.getTitle(),
+                article.getSlug(),
+                article.getContent(),
+                article.getCreatedAt(),
+                article.getUpdatedAt(),
+                article.getViews(),
+                article.getTags().stream()
+                        .map(Tag::getSlug)
+                        .toList()
+        );
+    }
+
+}
+
