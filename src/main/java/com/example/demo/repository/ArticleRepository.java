@@ -23,4 +23,5 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findByCategoryId(Long categoryId, Pageable pageable);
     boolean existsBySlugAndIdNot(String slug, Long id);
 
+
 }

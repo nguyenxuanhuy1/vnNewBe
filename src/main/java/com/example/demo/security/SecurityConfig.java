@@ -2,6 +2,7 @@ package com.example.demo.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,20 +29,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Tắt CSRF (vì bạn dùng JWT, không cần CSRF token)
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
-                // Dùng JWT -> không dùng session
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Cho phép các endpoint public
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(
                                 "/api/user/login",
                                 "/api/user/register",
                                 "/api/user/refresh",
-                                "/api/routes/**",
-                                "/api/rides/**",
-                                "/api/feedbacks/top3",
                                 "/error"
                         ).permitAll()
                         // Còn lại phải đăng nhập

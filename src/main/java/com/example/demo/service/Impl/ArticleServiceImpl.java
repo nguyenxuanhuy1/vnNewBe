@@ -113,12 +113,14 @@ public class ArticleServiceImpl implements ArticleService {
         articleRepository.save(article);
         return "Cập nhật bài viết thành công!";
     }
-
-
     @Override
     public PageResponse<ArticleListDto> getArticlesByCategory(Long categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Article> articlePage = articleRepository.findByCategoryId(categoryId, pageable);
+
+        // Nếu có categoryId → lọc theo category, không có → lấy tất cả
+        Page<Article> articlePage = (categoryId != null)
+                ? articleRepository.findByCategoryId(categoryId, pageable)
+                : articleRepository.findAll(pageable);
 
         List<ArticleListDto> dtoList = articlePage.getContent().stream()
                 .map(a -> new ArticleListDto(
@@ -179,6 +181,15 @@ public class ArticleServiceImpl implements ArticleService {
         return categories.stream()
                 .map(c -> new CategoryDto(c.getId(), c.getName()))
                 .toList();
+    }
+    @Override
+    public String deleteArticle(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết" ));
+        article.getTags().clear();
+        articleRepository.save(article);
+        articleRepository.delete(article);
+        return "Xóa bài viết thành công!";
     }
 }
 

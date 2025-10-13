@@ -11,5 +11,5 @@ public interface ArticleService {
     PageResponse<ArticleListDto> getArticlesByCategory(Long categoryId, int page, int size);
     PageResponse<ArticleListDto> searchArticlesByTags(List<String> tags, int page, int size);
     List<CategoryDto> getAllCategories();
-
+    String deleteArticle(Long id);
 }
