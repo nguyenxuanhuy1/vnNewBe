@@ -1,17 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.ArticleDetailDto;
-import com.example.demo.dto.ArticleDto;
-import com.example.demo.dto.ArticleListDto;
-import com.example.demo.dto.PageResponse;
-import com.example.demo.entity.Article;
+import com.example.demo.dto.*;
 import com.example.demo.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -20,7 +15,6 @@ import java.util.Map;
 public class ArticleController {
 
     private final ArticleService articleService;
-
     @PostMapping("create")
     public ResponseEntity<String> createArticle(@RequestBody ArticleDto dto) {
         String message = articleService.createArticle(dto);
@@ -53,5 +47,8 @@ public class ArticleController {
             @RequestParam(defaultValue = "10") int size) {
         return articleService.searchArticlesByTags(tags, page, size);
     }
-
+    @GetMapping("/category")
+    public List<CategoryDto> getAllCategories() {
+        return articleService.getAllCategories();
+    }
 }

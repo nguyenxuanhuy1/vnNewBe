@@ -1,8 +1,5 @@
 package com.example.demo.service;
-import com.example.demo.dto.ArticleDetailDto;
-import com.example.demo.dto.ArticleDto;
-import com.example.demo.dto.ArticleListDto;
-import com.example.demo.dto.PageResponse;
+import com.example.demo.dto.*;
 import com.example.demo.entity.Article;
 
 import java.util.List;
@@ -13,6 +10,6 @@ public interface ArticleService {
     String updateArticle(Long id, ArticleDto dto);
     PageResponse<ArticleListDto> getArticlesByCategory(Long categoryId, int page, int size);
     PageResponse<ArticleListDto> searchArticlesByTags(List<String> tags, int page, int size);
-
+    List<CategoryDto> getAllCategories();
 
 }
