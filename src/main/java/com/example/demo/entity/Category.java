@@ -20,8 +20,8 @@ public class Category {
 
     private String name;
 
-    @Column(unique = true)
-    private String slug;
+//    @Column(unique = true)
+//    private String slug;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @JsonIgnore

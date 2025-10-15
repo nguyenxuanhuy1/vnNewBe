@@ -191,5 +191,33 @@ public class ArticleServiceImpl implements ArticleService {
         articleRepository.delete(article);
         return "Xóa bài viết thành công!";
     }
+    @Override
+    public CategoryDto createCategory(CategoryDto dto) {
+        Category category = new Category();
+        category.setName(dto.getName());
+        categoryRepository.save(category);
+
+        return new CategoryDto(category.getId(), category.getName());
+    }
+
+    @Override
+    public CategoryDto updateCategory(Long id, CategoryDto dto) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        category.setName(dto.getName());
+        categoryRepository.save(category);
+
+        return new CategoryDto(category.getId(), category.getName());
+    }
+
+    @Override
+    public void deleteCategory(Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new RuntimeException("Category not found");
+        }
+        categoryRepository.deleteById(id);
+    }
+
 }
 

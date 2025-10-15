@@ -57,4 +57,19 @@ public class ArticleController {
     public List<CategoryDto> getAllCategories() {
         return articleService.getAllCategories();
     }
+    @PostMapping("/category/create")
+    public CategoryDto createCategory(@RequestBody CategoryDto dto) {
+        return articleService.createCategory(dto);
+    }
+    // Cập nhật
+    @PostMapping("/category/update/{id}")
+    public CategoryDto updateCategory(@PathVariable Long id, @RequestBody CategoryDto dto) {
+        return articleService.updateCategory(id, dto);
+    }
+    // Xóa
+    @PostMapping("/category/delete/{id}")
+    public void deleteCategory(@PathVariable Long id) {
+        articleService.deleteCategory(id);
+    }
 }
+
