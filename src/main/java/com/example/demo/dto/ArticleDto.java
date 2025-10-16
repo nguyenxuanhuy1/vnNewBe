@@ -9,6 +9,7 @@ import java.util.List;
 public class ArticleDto {
     private String title;
     private String slug;
+    private String shortContent;
     private String content;
     private String image;
     private Long categoryId;

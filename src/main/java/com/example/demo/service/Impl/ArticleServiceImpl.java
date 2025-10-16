@@ -34,11 +34,12 @@ public class ArticleServiceImpl implements ArticleService {
         String slug = SlugUtil.toSlug(dto.getTitle());
 
         if (articleRepository.findBySlug(slug).isPresent()) {
-            throw new RuntimeException("Tiêu đề hoặc slug đã tồn tại!");
+            throw new RuntimeException("Tiêu đề đã tồn tại!");
         }
         Article article = new Article();
         article.setTitle(dto.getTitle());
         article.setSlug(slug);
+        article.setShortContent(dto.getShortContent());
         article.setContent(dto.getContent());
         article.setImage(dto.getImage());
         article.setCategory(category);
@@ -80,6 +81,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         article.setTitle(dto.getTitle());
         article.setSlug(newSlug);
+        article.setShortContent(dto.getShortContent());
         article.setContent(dto.getContent());
         article.setImage(dto.getImage());
         article.setViews(dto.getViews());

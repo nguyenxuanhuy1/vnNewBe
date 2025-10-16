@@ -22,7 +22,7 @@ public class Article {
 
     private String title;
     private String slug;
-
+    private String shortContent;
     @Column(columnDefinition = "TEXT")
     private String content;
 
