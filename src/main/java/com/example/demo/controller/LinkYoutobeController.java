@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.LinkYoutobeDto;
 import com.example.demo.service.LinkYoutobeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,28 +15,24 @@ public class LinkYoutobeController {
     @Autowired
     private LinkYoutobeService service;
 
-    @PostMapping("/list")
+    @GetMapping("/list")
     public List<LinkYoutobeDto> getAll() {
         return service.getAll();
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public LinkYoutobeDto create(@RequestBody LinkYoutobeDto dto) {
         return service.create(dto);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/update/{id}")
     public LinkYoutobeDto update(@PathVariable Long id, @RequestBody LinkYoutobeDto dto) {
         return service.update(id, dto);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete/{id}")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 
-    @PostMapping("/detail")
-    public List<LinkYoutobeDto> search(@RequestParam String keyword) {
-        return service.searchByTitle(keyword);
-    }
 }

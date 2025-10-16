@@ -38,9 +38,9 @@ public class SecurityConfig {
                                 "/api/user/login",
                                 "/api/user/register",
                                 "/api/user/refresh",
+                                "/api/link-youtube/list",
                                 "/error"
                         ).permitAll()
-                        // Còn lại phải đăng nhập
                         .anyRequest().authenticated()
                 )
                 // Nếu chưa đăng nhập -> trả về HTTP 401
@@ -57,7 +57,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://chiasechuyendi.online", "http://localhost:3000")); // FE
+        configuration.setAllowedOrigins(List.of("http://localhost:3001", "http://localhost:3000")); // FE
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

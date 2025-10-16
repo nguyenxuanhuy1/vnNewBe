@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -47,4 +48,5 @@ public class Article {
     )
     @JsonIgnoreProperties("articles")
     private Set<Tag> tags = new HashSet<>();
+
 }

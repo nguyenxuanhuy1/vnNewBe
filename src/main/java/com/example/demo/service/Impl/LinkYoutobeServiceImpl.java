@@ -50,12 +50,4 @@ public class LinkYoutobeServiceImpl implements LinkYoutobeService {
         }
         repository.deleteById(id);
     }
-
-    @Override
-    public List<LinkYoutobeDto> searchByTitle(String keyword) {
-        return repository.findByTitleContainingIgnoreCase(keyword)
-                .stream()
-                .map(l -> new LinkYoutobeDto(l.getId(), l.getTitle(), l.getLink()))
-                .toList();
-    }
 }

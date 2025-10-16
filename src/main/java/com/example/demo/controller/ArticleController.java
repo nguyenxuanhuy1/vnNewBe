@@ -57,16 +57,19 @@ public class ArticleController {
     public List<CategoryDto> getAllCategories() {
         return articleService.getAllCategories();
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/category/create")
     public CategoryDto createCategory(@RequestBody CategoryDto dto) {
         return articleService.createCategory(dto);
     }
     // Cập nhật
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/category/update/{id}")
     public CategoryDto updateCategory(@PathVariable Long id, @RequestBody CategoryDto dto) {
         return articleService.updateCategory(id, dto);
     }
     // Xóa
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/category/delete/{id}")
     public void deleteCategory(@PathVariable Long id) {
         articleService.deleteCategory(id);

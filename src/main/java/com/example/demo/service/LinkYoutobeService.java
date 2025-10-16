@@ -8,5 +8,4 @@ public interface LinkYoutobeService {
     LinkYoutobeDto create(LinkYoutobeDto dto);
     LinkYoutobeDto update(Long id, LinkYoutobeDto dto);
     void delete(Long id);
-    List<LinkYoutobeDto> searchByTitle(String keyword);
 }

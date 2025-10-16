@@ -33,13 +33,10 @@ public class UsersController {
         }
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto dto) {
         return ResponseEntity.ok(authService.login(dto));
     }
-
-
     @GetMapping("/info")
     public UserEntity getUserInfo(Authentication authentication) {
         String email = authentication.getName();
