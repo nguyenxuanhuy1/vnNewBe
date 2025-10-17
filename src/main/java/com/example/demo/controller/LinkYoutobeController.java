@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.LinkYoutobeDto;
+import com.example.demo.dto.PageResponse;
 import com.example.demo.service.LinkYoutobeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +17,12 @@ public class LinkYoutobeController {
     private LinkYoutobeService service;
 
     @GetMapping("/list")
-    public List<LinkYoutobeDto> getAll() {
-        return service.getAll();
+    public PageResponse<LinkYoutobeDto> getAll(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return service.getAll(page, size);
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public LinkYoutobeDto create(@RequestBody LinkYoutobeDto dto) {

@@ -1,12 +1,15 @@
 package com.example.demo.service.Impl;
 
 import com.example.demo.dto.LinkYoutobeDto;
+import com.example.demo.dto.PageResponse;
 import com.example.demo.entity.LinkYoutobe;
 import com.example.demo.repository.LinkYoutobeRepository;
 import com.example.demo.service.LinkYoutobeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -16,10 +19,21 @@ public class LinkYoutobeServiceImpl implements LinkYoutobeService {
     private LinkYoutobeRepository repository;
 
     @Override
-    public List<LinkYoutobeDto> getAll() {
-        return repository.findAll().stream()
+    public PageResponse<LinkYoutobeDto> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<LinkYoutobe> linkPage = repository.findAll(pageable);
+
+        List<LinkYoutobeDto> content = linkPage.getContent().stream()
                 .map(l -> new LinkYoutobeDto(l.getId(), l.getTitle(), l.getLink()))
                 .toList();
+
+        return new PageResponse<>(
+                content,
+                linkPage.getTotalElements(),
+                linkPage.getSize(),
+                linkPage.getNumber() + 1
+        );
+
     }
 
     @Override
