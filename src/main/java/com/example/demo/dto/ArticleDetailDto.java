@@ -19,4 +19,6 @@ public class ArticleDetailDto {
     private LocalDateTime updatedAt;
     private Long views;
     private List<String> tags;
+    private Long categoryId;
+    private String image;
 }

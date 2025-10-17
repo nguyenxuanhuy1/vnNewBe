@@ -33,7 +33,6 @@ public class LinkYoutobeServiceImpl implements LinkYoutobeService {
                 linkPage.getSize(),
                 linkPage.getNumber() + 1
         );
-
     }
 
     @Override

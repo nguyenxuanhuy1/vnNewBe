@@ -85,7 +85,6 @@ public class ArticleServiceImpl implements ArticleService {
         article.setContent(dto.getContent());
         article.setImage(dto.getImage());
         article.setViews(dto.getViews());
-
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Danh mục không tồn tại"));
         article.setCategory(category);
@@ -174,7 +173,9 @@ public class ArticleServiceImpl implements ArticleService {
                 article.getViews(),
                 article.getTags().stream()
                         .map(Tag::getSlug)
-                        .toList()
+                        .toList(),
+                article.getCategory() != null ? article.getCategory().getId() : null,
+                article.getImage()
         );
     }
     @Override
