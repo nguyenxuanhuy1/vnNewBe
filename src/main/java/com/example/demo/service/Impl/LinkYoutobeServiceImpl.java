@@ -8,6 +8,7 @@ import com.example.demo.service.LinkYoutobeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
@@ -20,7 +21,8 @@ public class LinkYoutobeServiceImpl implements LinkYoutobeService {
 
     @Override
     public PageResponse<LinkYoutobeDto> getAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
         Page<LinkYoutobe> linkPage = repository.findAll(pageable);
 
         List<LinkYoutobeDto> content = linkPage.getContent().stream()
@@ -34,6 +36,7 @@ public class LinkYoutobeServiceImpl implements LinkYoutobeService {
                 linkPage.getNumber() + 1
         );
     }
+
 
     @Override
     public LinkYoutobeDto create(LinkYoutobeDto dto) {

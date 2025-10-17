@@ -11,7 +11,6 @@ import com.example.demo.service.ArticleService;
 import com.example.demo.util.SlugUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.*;
 
@@ -168,6 +167,7 @@ public class ArticleServiceImpl implements ArticleService {
                 article.getTitle(),
                 article.getSlug(),
                 article.getContent(),
+                article.getShortContent(),
                 article.getCreatedAt(),
                 article.getUpdatedAt(),
                 article.getViews(),

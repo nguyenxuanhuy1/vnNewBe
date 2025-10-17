@@ -15,6 +15,7 @@ public class ArticleDetailDto {
     private String title;
     private String slug;
     private String content;
+    private String shortContent;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Long views;
