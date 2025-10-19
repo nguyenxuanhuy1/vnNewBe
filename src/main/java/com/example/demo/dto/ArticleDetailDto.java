@@ -22,4 +22,6 @@ public class ArticleDetailDto {
     private List<String> tags;
     private Long categoryId;
     private String image;
+    private Boolean isFeatured;
+
 }

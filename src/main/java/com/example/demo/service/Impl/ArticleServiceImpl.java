@@ -204,7 +204,8 @@ public class ArticleServiceImpl implements ArticleService {
                         .map(Tag::getSlug)
                         .toList(),
                 article.getCategory() != null ? article.getCategory().getId() : null,
-                article.getImage()
+                article.getImage(),
+                article.getIsFeatured()
         );
     }
     @Override
