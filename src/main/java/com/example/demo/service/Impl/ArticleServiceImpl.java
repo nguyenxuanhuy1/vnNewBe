@@ -131,7 +131,35 @@ public class ArticleServiceImpl implements ArticleService {
                         a.getCreatedAt(),
                         a.getUpdatedAt(),
                         a.getViews(),
-                        a.getIsFeatured()
+                        a.getIsFeatured(),
+                        a.getShortContent()
+                ))
+                .toList();
+
+        return new PageResponse<>(dtoList, articlePage.getTotalElements(), size, page);
+    }
+    @Override
+    public PageResponse<ArticleListDto> searchArticlesByTitle(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Article> articlePage;
+        if (title == null || title.trim().isEmpty()) {
+            articlePage = articleRepository.findAll(pageable);
+        } else {
+            articlePage = articleRepository.findByTitleContainingIgnoreCase(title.trim(), pageable);
+        }
+
+        List<ArticleListDto> dtoList = articlePage.getContent().stream()
+                .map(a -> new ArticleListDto(
+                        a.getId(),
+                        a.getTitle(),
+                        a.getSlug(),
+                        a.getImage(),
+                        a.getCreatedAt(),
+                        a.getUpdatedAt(),
+                        a.getViews(),
+                        a.getIsFeatured(),
+                        a.getShortContent()
                 ))
                 .toList();
 
@@ -152,7 +180,8 @@ public class ArticleServiceImpl implements ArticleService {
                         a.getCreatedAt(),
                         a.getUpdatedAt(),
                         a.getViews(),
-                        a.getIsFeatured()
+                        a.getIsFeatured(),
+                        a.getShortContent()
                 ))
                 .toList();
 

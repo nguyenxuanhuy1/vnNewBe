@@ -18,4 +18,5 @@ public class ArticleListDto {
     private LocalDateTime updatedAt;
     private Long views;
     private Boolean isFeatured;
+    private String shortContent;
 }

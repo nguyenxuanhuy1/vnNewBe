@@ -22,6 +22,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findDistinctByTags_SlugIn(@Param("slugs") List<String> slugs, Pageable pageable);
     Page<Article> findByCategoryId(Long categoryId, Pageable pageable);
     boolean existsBySlugAndIdNot(String slug, Long id);
-
+    Page<Article> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
 }

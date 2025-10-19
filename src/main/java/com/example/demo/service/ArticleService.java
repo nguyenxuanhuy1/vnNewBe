@@ -12,5 +12,6 @@ public interface ArticleService {
     CategoryDto createCategory(CategoryDto dto);
     CategoryDto updateCategory(Long id, CategoryDto dto);
     void deleteCategory(Long id);
+    PageResponse<ArticleListDto> searchArticlesByTitle(String title, int page, int size);
 
 }

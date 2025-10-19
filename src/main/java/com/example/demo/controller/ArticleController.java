@@ -42,6 +42,16 @@ public class ArticleController {
             @RequestParam(defaultValue = "10") int size) {
         return articleService.getArticlesByCategory(categoryId, page, size);
     }
+
+    @PostMapping("/search/admin")
+    public PageResponse<ArticleListDto> searchArticles(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestBody SearchArticleDto searchDto) {
+        return articleService.searchArticlesByTitle(searchDto.getTitle(), page, size);
+    }
+
+
     @GetMapping("/detail/{slug}")
     public ResponseEntity<ArticleDetailDto> getArticleDetail(@PathVariable String slug) {
         return ResponseEntity.ok(articleService.getArticleDetail(slug));
