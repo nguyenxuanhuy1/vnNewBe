@@ -26,6 +26,7 @@ public class Article {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(length = 600)
     private String image;
 
     private LocalDateTime createdAt = LocalDateTime.now();
