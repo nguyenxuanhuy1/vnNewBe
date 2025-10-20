@@ -41,4 +41,21 @@ public class CommentController {
     public List<Comment> getComments(@PathVariable Long articleId) {
         return commentService.getCommentsByArticle(articleId);
     }
+
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteComment(
+            @RequestBody Map<String, Long> body,
+            Authentication authentication
+    ) {
+        Long commentId = body.get("commentId");
+        String email = authentication.getName();
+
+        try {
+            commentService.deleteComment(commentId, email);
+            return ResponseEntity.ok(Map.of("message", "Xoá bình luận thành công"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }
