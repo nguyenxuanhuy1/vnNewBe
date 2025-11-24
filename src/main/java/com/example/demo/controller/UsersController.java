@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AuthResponseDto;
-import com.example.demo.dto.LoginDto;
-import com.example.demo.dto.RegisterDto;
+import com.example.demo.dto.*;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.service.Impl.AuthService;
 import com.example.demo.service.UserService;
@@ -10,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Page;
 import java.util.Map;
 
 @RestController
@@ -52,5 +50,21 @@ public class UsersController {
                 "accessToken", newAccessToken,
                 "refreshToken", refreshToken
         ));
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/search")
+    public ResponseEntity<PageResponse<UserResponseDto>> searchUsers(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(userService.searchUsers(keyword, page, size));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/delete")
+    public ResponseEntity<Map<String, String>> deleteUser(@RequestParam Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok(Map.of("message", "Xoá tài khoản thành công"));
     }
 }
