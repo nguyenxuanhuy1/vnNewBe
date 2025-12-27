@@ -1,5 +1,7 @@
 package com.example.demo.service;
 import com.example.demo.dto.*;
+import com.example.demo.util.ArticleStatus;
+
 import java.util.List;
 public interface ArticleService {
     String createArticle(ArticleDto dto);
@@ -12,6 +14,6 @@ public interface ArticleService {
     CategoryDto createCategory(CategoryDto dto);
     CategoryDto updateCategory(Long id, CategoryDto dto);
     void deleteCategory(Long id);
-    PageResponse<ArticleListDto> searchArticlesByTitle(String title, int page, int size);
-
+    PageResponse<ArticleListDto> searchArticlesByTitle(String title, ArticleStatus status, int page, int size);
+    void changeStatus(Long articleId, ArticleStatus status);
 }

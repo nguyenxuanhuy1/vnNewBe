@@ -2,19 +2,14 @@ package com.example.demo.dto;
 
 import com.example.demo.util.ArticleStatus;
 
-public class SearchArticleDto {
-    private String title;
+public class ChangeArticleStatusDto {
+
     private ArticleStatus status;
-    // getter & setter
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
+
     public ArticleStatus getStatus() {
         return status;
     }
+
     public void setStatus(ArticleStatus status) {
         this.status = status;
     }

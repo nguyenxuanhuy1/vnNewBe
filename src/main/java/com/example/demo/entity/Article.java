@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.util.ArticleStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -50,4 +51,7 @@ public class Article {
     @JsonIgnoreProperties("articles")
     private Set<Tag> tags = new HashSet<>();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ArticleStatus status;
 }

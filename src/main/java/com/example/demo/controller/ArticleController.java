@@ -48,7 +48,7 @@ public class ArticleController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestBody SearchArticleDto searchDto) {
-        return articleService.searchArticlesByTitle(searchDto.getTitle(), page, size);
+        return articleService.searchArticlesByTitle(searchDto.getTitle(),searchDto.getStatus(), page, size);
     }
 
 
@@ -83,6 +83,15 @@ public class ArticleController {
     @PostMapping("/category/delete/{id}")
     public void deleteCategory(@PathVariable Long id) {
         articleService.deleteCategory(id);
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/change-status/{id}")
+    public ResponseEntity<?> changeStatus(
+            @PathVariable Long id,
+            @RequestBody ChangeArticleStatusDto dto
+    ) {
+        articleService.changeStatus(id, dto.getStatus());
+        return ResponseEntity.ok("Đổi trạng thái bài viết thành công");
     }
 }
 

@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.entity.Article;
 import com.example.demo.entity.Category;
+import com.example.demo.util.ArticleStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,5 +24,16 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findByCategoryId(Long categoryId, Pageable pageable);
     boolean existsBySlugAndIdNot(String slug, Long id);
     Page<Article> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    Page<Article> findByStatus(ArticleStatus status, Pageable pageable);
+    Page<Article> findByCategoryIdAndStatus(
+            Long categoryId,
+            ArticleStatus status,
+            Pageable pageable
+    );
+    Page<Article> findByTitleContainingIgnoreCaseAndStatus(
+            String title,
+            ArticleStatus status,
+            Pageable pageable
+    );
 
 }

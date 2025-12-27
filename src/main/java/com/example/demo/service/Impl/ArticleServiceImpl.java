@@ -8,6 +8,7 @@ import com.example.demo.repository.ArticleRepository;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.TagRepository;
 import com.example.demo.service.ArticleService;
+import com.example.demo.util.ArticleStatus;
 import com.example.demo.util.SlugUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class ArticleServiceImpl implements ArticleService {
         article.setCategory(category);
         article.setViews(dto.getViews());
         article.setIsFeatured(dto.getIsFeatured());
-
+        article.setStatus(ArticleStatus.PENDING);
         if (Boolean.TRUE.equals(dto.getIsFeatured())) {
             articleRepository.unsetFeaturedArticles();
         }
@@ -113,14 +114,47 @@ public class ArticleServiceImpl implements ArticleService {
         articleRepository.save(article);
         return "Cập nhật bài viết thành công!";
     }
+
+    //    @Override
+//    public PageResponse<ArticleListDto> getArticlesByCategory(Long categoryId, int page, int size) {
+//        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+//
+//        // Nếu có categoryId → lọc theo category, không có → lấy tất cả
+//        Page<Article> articlePage = (categoryId != null)
+//                ? articleRepository.findByCategoryId(categoryId, pageable)
+//                : articleRepository.findAll(pageable);
+//
+//        List<ArticleListDto> dtoList = articlePage.getContent().stream()
+//                .map(a -> new ArticleListDto(
+//                        a.getId(),
+//                        a.getTitle(),
+//                        a.getSlug(),
+//                        a.getImage(),
+//                        a.getCreatedAt(),
+//                        a.getUpdatedAt(),
+//                        a.getViews(),
+//                        a.getIsFeatured(),
+//                        a.getShortContent(),
+//                        a.getStatus()
+//                ))
+//                .toList();
+//
+//        return new PageResponse<>(dtoList, articlePage.getTotalElements(), size, page);
+//    }
     @Override
     public PageResponse<ArticleListDto> getArticlesByCategory(Long categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        // Nếu có categoryId → lọc theo category, không có → lấy tất cả
         Page<Article> articlePage = (categoryId != null)
-                ? articleRepository.findByCategoryId(categoryId, pageable)
-                : articleRepository.findAll(pageable);
+                ? articleRepository.findByCategoryIdAndStatus(
+                categoryId,
+                ArticleStatus.PUBLISHED, //  mặc định public
+                pageable
+        )
+                : articleRepository.findByStatus(
+                ArticleStatus.PUBLISHED, //  mặc định public
+                pageable
+        );
 
         List<ArticleListDto> dtoList = articlePage.getContent().stream()
                 .map(a -> new ArticleListDto(
@@ -132,21 +166,74 @@ public class ArticleServiceImpl implements ArticleService {
                         a.getUpdatedAt(),
                         a.getViews(),
                         a.getIsFeatured(),
-                        a.getShortContent()
+                        a.getShortContent(),
+                        a.getStatus()
                 ))
                 .toList();
 
         return new PageResponse<>(dtoList, articlePage.getTotalElements(), size, page);
     }
+
+    //    @Override
+//    public PageResponse<ArticleListDto> searchArticlesByTitle(String title, int page, int size) {
+//        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+//
+//        Page<Article> articlePage;
+//        if (title == null || title.trim().isEmpty()) {
+//            articlePage = articleRepository.findAll(pageable);
+//        } else {
+//            articlePage = articleRepository.findByTitleContainingIgnoreCase(title.trim(), pageable);
+//        }
+//
+//        List<ArticleListDto> dtoList = articlePage.getContent().stream()
+//                .map(a -> new ArticleListDto(
+//                        a.getId(),
+//                        a.getTitle(),
+//                        a.getSlug(),
+//                        a.getImage(),
+//                        a.getCreatedAt(),
+//                        a.getUpdatedAt(),
+//                        a.getViews(),
+//                        a.getIsFeatured(),
+//                        a.getShortContent(),
+//                        a.getStatus()
+//                ))
+//                .toList();
+//
+//        return new PageResponse<>(dtoList, articlePage.getTotalElements(), size, page);
+//    }
     @Override
-    public PageResponse<ArticleListDto> searchArticlesByTitle(String title, int page, int size) {
+    public PageResponse<ArticleListDto> searchArticlesByTitle(
+            String title,
+            ArticleStatus status,
+            int page,
+            int size
+    ) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
+        boolean hasTitle = title != null && !title.trim().isEmpty();
+        boolean hasStatus = status != null;
+
         Page<Article> articlePage;
-        if (title == null || title.trim().isEmpty()) {
-            articlePage = articleRepository.findAll(pageable);
+
+        if (hasTitle && hasStatus) {
+            articlePage = articleRepository.findByTitleContainingIgnoreCaseAndStatus(
+                    title.trim(),
+                    status,
+                    pageable
+            );
+        } else if (hasTitle) {
+            articlePage = articleRepository.findByTitleContainingIgnoreCase(
+                    title.trim(),
+                    pageable
+            );
+        } else if (hasStatus) {
+            articlePage = articleRepository.findByStatus(
+                    status,
+                    pageable
+            );
         } else {
-            articlePage = articleRepository.findByTitleContainingIgnoreCase(title.trim(), pageable);
+            articlePage = articleRepository.findAll(pageable);
         }
 
         List<ArticleListDto> dtoList = articlePage.getContent().stream()
@@ -159,11 +246,17 @@ public class ArticleServiceImpl implements ArticleService {
                         a.getUpdatedAt(),
                         a.getViews(),
                         a.getIsFeatured(),
-                        a.getShortContent()
+                        a.getShortContent(),
+                        a.getStatus()
                 ))
                 .toList();
 
-        return new PageResponse<>(dtoList, articlePage.getTotalElements(), size, page);
+        return new PageResponse<>(
+                dtoList,
+                articlePage.getTotalElements(),
+                size,
+                page
+        );
     }
 
     @Override
@@ -181,12 +274,14 @@ public class ArticleServiceImpl implements ArticleService {
                         a.getUpdatedAt(),
                         a.getViews(),
                         a.getIsFeatured(),
-                        a.getShortContent()
+                        a.getShortContent(),
+                        a.getStatus()
                 ))
                 .toList();
 
         return new PageResponse<>(dtoList, articlePage.getTotalElements(), size, page);
     }
+
     @Override
     public ArticleDetailDto getArticleDetail(String slug) {
         Article article = articleRepository.findBySlug(slug)
@@ -208,6 +303,7 @@ public class ArticleServiceImpl implements ArticleService {
                 article.getIsFeatured()
         );
     }
+
     @Override
     public List<CategoryDto> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
@@ -215,15 +311,17 @@ public class ArticleServiceImpl implements ArticleService {
                 .map(c -> new CategoryDto(c.getId(), c.getName()))
                 .toList();
     }
+
     @Override
     public String deleteArticle(Long id) {
         Article article = articleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết" ));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết"));
         article.getTags().clear();
         articleRepository.save(article);
         articleRepository.delete(article);
         return "Xóa bài viết thành công!";
     }
+
     @Override
     public CategoryDto createCategory(CategoryDto dto) {
         Category category = new Category();
@@ -250,6 +348,26 @@ public class ArticleServiceImpl implements ArticleService {
             throw new RuntimeException("Category not found");
         }
         categoryRepository.deleteById(id);
+    }
+    @Override
+    @Transactional
+    public void changeStatus(Long articleId, ArticleStatus status) {
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại"));
+
+        if (status == null) {
+            throw new RuntimeException("Trạng thái không hợp lệ");
+        }
+
+        if (status == ArticleStatus.PENDING) {
+            throw new RuntimeException("Không thể chuyển về trạng thái PENDING");
+        }
+
+        if (article.getStatus() != ArticleStatus.PENDING) {
+            throw new RuntimeException("Chỉ bài đang chờ duyệt mới được đổi trạng thái");
+        }
+
+        article.setStatus(status);
     }
 
 }
