@@ -16,14 +16,14 @@ import java.util.List;
 public class ArticleController {
 
     private final ArticleService articleService;
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'POST')")
     @PostMapping("create")
     public ResponseEntity<String> createArticle(@RequestBody ArticleDto dto) {
         String message = articleService.createArticle(dto);
         return ResponseEntity.ok(message);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'POST')")
     @PostMapping("/update/{id}")
     public ResponseEntity<String> updateArticle(@PathVariable Long id, @RequestBody ArticleDto dto) {
         String message = articleService.updateArticle(id, dto);
@@ -84,7 +84,7 @@ public class ArticleController {
     public void deleteCategory(@PathVariable Long id) {
         articleService.deleteCategory(id);
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'POST')")
     @PostMapping("/change-status/{id}")
     public ResponseEntity<?> changeStatus(
             @PathVariable Long id,
