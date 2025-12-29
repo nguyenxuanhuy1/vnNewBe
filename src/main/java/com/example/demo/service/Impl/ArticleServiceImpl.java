@@ -359,13 +359,13 @@ public class ArticleServiceImpl implements ArticleService {
             throw new RuntimeException("Trạng thái không hợp lệ");
         }
 
-        if (status == ArticleStatus.PENDING) {
-            throw new RuntimeException("Không thể chuyển về trạng thái PENDING");
-        }
+//        if (status == ArticleStatus.PENDING) {
+//            throw new RuntimeException("Không thể chuyển về trạng thái PENDING");
+//        }
 
-        if (article.getStatus() != ArticleStatus.PENDING) {
-            throw new RuntimeException("Chỉ bài đang chờ duyệt mới được đổi trạng thái");
-        }
+//        if (article.getStatus() != ArticleStatus.PENDING) {
+//            throw new RuntimeException("Chỉ bài đang chờ duyệt mới được đổi trạng thái");
+//        }
 
         article.setStatus(status);
     }
